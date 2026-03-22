@@ -122,6 +122,20 @@ streamlit run app/streamlit_app.py
 
 ---
 
-##  Author
-**Harshini Ratnakumar**  
-[GitHub](https://github.com/harshini752)
+## Contributing
+
+Feel free to fork this project and submit pull requests. Contributions are always welcome!
+
+---
+
+## License
+
+This project is open-source and available for use.
+
+---
+
+## Contact
+
+For questions or suggestions, feel free to reach out:
+
+ **harshiniratnakumar@gmail.com**

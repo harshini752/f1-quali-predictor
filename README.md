@@ -68,12 +68,19 @@ The average F1 qualifying lap time across all 2023 circuits is **84.8 seconds**,
 ```
 f1-quali-predictor/
 ├── data/
-│   ├── raw/               # Raw FastF1 session data
-│   └── processed/         # Feature engineered data
-├── pipeline/              # BigQuery data loading scripts
-│   ├── load_to_bigquery.py        # Loads CSV data into BigQuery
+│   ├── raw/                   # Raw FastF1 session data
+│   └── processed/             # Feature engineered data
+├── src/                       # Modular Python pipeline
+│   ├── data_loader.py         # FastF1 session fetching
+│   ├── data_pipeline.py       # End-to-end data collection script
+│   ├── features.py            # Feature engineering
+│   ├── model.py               # Model definitions (RF, GBM, Ridge, XGBoost)
+│   ├── train.py               # Training + artefact saving
+│   └── predict.py             # Inference helpers
+├── pipeline/                  # BigQuery data loading scripts
+│   ├── load_to_bigquery.py    # Loads CSV data into BigQuery
 │   └── requirements-pipeline.txt  # BigQuery + dbt dependencies
-├── dbt_f1/                # dbt models and tests (staging + marts)
+├── dbt_f1/                    # dbt models and tests (staging + marts)
 │   ├── dbt_project.yml
 │   ├── profiles.yml
 │   └── models/
@@ -82,18 +89,21 @@ f1-quali-predictor/
 │       │   └── stg_pit_stops.sql      # Derived pit stop events
 │       └── marts/
 │           └── mart_qualifying_results.sql  # Qualifying summary with grid positions
-├── notebooks/
-│   ├── 01_data_collection.ipynb
-│   ├── 02_eda.ipynb
-│   ├── 03_feature_engineering.ipynb
-│   ├── 04_modeling.ipynb
-│   └── 05_evaluation.ipynb
-├── src/                   # Modular Python scripts
 ├── app/
-│   └── streamlit_app.py   # Live demo app
-├── models/                # Saved model and encoders
-├── assets/                # Charts and visualizations
-└── README.md
+│   └── streamlit_app.py       # Live demo app
+├── tests/
+│   └── test_feature_engineering.py  # Pytest unit tests for src/features.py
+├── models/                    # Saved model artefacts and label encoders
+├── assets/                    # Charts and visualizations
+├── 01_data_collection.ipynb
+├── 02_eda.ipynb
+├── 03_feature_engineering.ipynb
+├── 04_modeling.ipynb
+├── 05_evaluation.ipynb
+├── config.yaml                # Central pipeline and model configuration
+├── Dockerfile
+├── docker-compose.yml
+└── requirements.txt
 ```
 
 ---
@@ -201,20 +211,20 @@ dbt test --profiles-dir .
 - **Modeling:** Scikit-learn (Random Forest, GBM, Ridge), XGBoost
 - **Visualization:** Matplotlib, Seaborn
 - **App:** Streamlit
+- **Testing:** Pytest
 - **Tracking:** MLflow
 - **Warehouse:** Google BigQuery — data warehouse
 - **Transformation:** dbt — data transformation and testing
-- **Infrastructure:** Google Cloud
+- **Infrastructure:** Google Cloud, Docker
 - **Language:** Python 3.13
 
 ---
 
 ##  Future Improvements
-- Add 2022 and 2024 seasons for more training data
-- Integrate XGBoost and LightGBM once Python 3.13 compatibility improves
-- Add tyre compound as a feature
-- Connect to OpenF1 API for real-time predictions
-- Deploy on Streamlit Cloud for public access
+- Connect to OpenF1 API for real-time pre-qualifying predictions
+- Add LightGBM model comparison
+- Expand dbt mart with sector-level and tyre degradation analytics
+- Add CI pipeline to run pytest + dbt tests on push
 
 ---
 

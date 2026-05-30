@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: mart_qualifying_results
+    description: >
+      One row per driver per race with qualifying position, grid gaps, and
+      practice-to-qualifying pace deltas. Use this table for analysis of
+      qualifying performance across the 2022–2024 seasons.
+    columns:
+      - name: year
+        description: Season year.
+        tests:
+          - not_null
+      - name: grand_prix
+        description: Full Grand Prix name.
+        tests:
+          - not_null
+      - name: quali_position
+        description: Qualifying grid position (1 = pole).
+        tests:
+          - not_null
+      - name: driver
+        description: Three-letter driver code.
+        tests:
+          - not_null
+      - name: team
+        description: Constructor name.
+        tests:
+          - not_null
+      - name: quali_best_seconds
+        description: Best qualifying lap time in seconds.
+        tests:
+          - not_null
+      - name: pole_time_seconds
+        description: Pole position lap time for this Grand Prix.
+      - name: gap_to_pole_seconds
+        description: >
+          Difference between this driver's quali time and pole (seconds).
+          Zero for the pole sitter.
+      - name: fp1_best_seconds
+        description: Driver's best FP1 lap time in seconds.
+      - name: fp2_best_seconds
+        description: Driver's best FP2 lap time in seconds.
+      - name: fp3_best_seconds
+        description: Driver's best FP3 lap time in seconds.
+      - name: fp3_to_quali_delta_seconds
+        description: >
+          FP3 best minus quali best. Positive = slower in FP3 than qualifying
+          (typical as drivers save tyres in practice).
+      - name: fp1_to_quali_delta_seconds
+        description: FP1 best minus quali best.
+      - name: fp1_compound
+        description: Tyre compound used for the FP1 best lap.
+      - name: fp2_compound
+        description: Tyre compound used for the FP2 best lap.
+      - name: fp3_compound
+        description: Tyre compound used for the FP3 best lap.
+      - name: air_temp_c
+        description: Air temperature during qualifying (Celsius).
+      - name: track_temp_c
+        description: Track surface temperature during qualifying (Celsius).
+      - name: humidity_pct
+        description: Relative humidity during qualifying (%).
+      - name: had_rainfall
+        description: Whether it rained during the qualifying session.

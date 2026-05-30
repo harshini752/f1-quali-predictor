@@ -4,3 +4,9 @@ data/raw/
 .env
 .DS_Store
 *.ipynb_checkpoints
+gcp_credentials.json
+
+# dbt
+dbt_f1/target/
+dbt_f1/dbt_packages/
+dbt_f1/logs/

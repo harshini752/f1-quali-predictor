@@ -1,0 +1,17 @@
+# Copy this file to ~/.dbt/profiles.yml, or run dbt with:
+#   dbt run --profiles-dir .
+#
+# Find your GCP project ID in the BigQuery console or in gcp_credentials.json.
+
+f1_bq:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: booming-disk-470500-f0   # Replace with your actual GCP project ID
+      dataset: f1_data
+      keyfile: ../gcp_credentials.json
+      threads: 4
+      timeout_seconds: 300
+      location: US

@@ -71,6 +71,18 @@ f1-quali-predictor/
 ├── data/
 │   ├── raw/               # Raw FastF1 session data
 │   └── processed/         # Feature engineered data
+├── pipeline/
+│   ├── load_to_bigquery.py        # Loads CSV data into BigQuery
+│   └── requirements-pipeline.txt  # BigQuery + dbt dependencies
+├── dbt_f1/                # dbt project for BigQuery transformations
+│   ├── dbt_project.yml
+│   ├── profiles.yml
+│   └── models/
+│       ├── staging/
+│       │   ├── stg_lap_times.sql      # Cleaned per-lap records
+│       │   └── stg_pit_stops.sql      # Derived pit stop events
+│       └── marts/
+│           └── mart_qualifying_results.sql  # Qualifying summary with grid positions
 ├── notebooks/
 │   ├── 01_data_collection.ipynb
 │   ├── 02_eda.ipynb
@@ -113,12 +125,86 @@ streamlit run app/streamlit_app.py
 
 ---
 
+## BigQuery + dbt Pipeline
+
+This layer loads the raw and processed F1 data into BigQuery and transforms it
+with dbt into clean staging views and an analytics-ready qualifying mart.
+
+### Architecture
+
+```
+data/raw/all_sessions.csv        ──┐
+                                   ├─► BigQuery (f1_data dataset)
+data/processed/features.csv      ──┘       │
+                                           ├── raw_lap_times
+                                           └── qualifying_features
+                                                    │
+                                               dbt (f1_dbt)
+                                                    │
+                                      ┌─────────────┴──────────────┐
+                                      │                            │
+                               stg_lap_times              mart_qualifying_results
+                               stg_pit_stops
+```
+
+### Setup
+
+#### 1. Install pipeline dependencies
+```bash
+pip install -r pipeline/requirements-pipeline.txt
+```
+
+#### 2. Place your service-account credentials
+Copy your GCP service account key to the project root as `gcp_credentials.json`
+(it is already in `.gitignore`). The script reads `project_id` directly from the
+JSON, so no extra configuration is needed.
+
+#### 3. Load data into BigQuery
+```bash
+python pipeline/load_to_bigquery.py
+```
+
+This creates the `f1_data` dataset (if it does not exist) and writes two tables:
+
+| Table | Source file | Rows (approx.) |
+|-------|-------------|-----------------|
+| `raw_lap_times` | `data/raw/all_sessions.csv` | ~150 k laps |
+| `qualifying_features` | `data/processed/features.csv` | ~600 driver-race rows |
+
+Timing columns (`LapTime`, `Sector1Time`, etc.) are converted from pandas
+timedelta strings to **float seconds** before loading.
+
+#### 4. Configure dbt
+Edit `dbt_f1/profiles.yml` and set your actual GCP project ID:
+```yaml
+project: my-first-project   # ← replace with your project ID
+```
+
+#### 5. Run dbt models
+```bash
+cd dbt_f1
+dbt run --profiles-dir .
+dbt test --profiles-dir .
+```
+
+#### dbt models
+
+| Model | Type | Description |
+|-------|------|-------------|
+| `stg_lap_times` | View | Cleaned per-lap records — accurate laps only, all timing in seconds |
+| `stg_pit_stops` | View | Pit stop events with compound change and duration in seconds |
+| `mart_qualifying_results` | Table | One row per driver per race: grid position, gap to pole, FP→quali deltas |
+
+---
+
 ##  Tech Stack
 - **Data:** FastF1, Pandas, NumPy
-- **Modeling:** Scikit-learn (Random Forest, GBM, Ridge)
+- **Modeling:** Scikit-learn (Random Forest, GBM, Ridge), XGBoost
 - **Visualization:** Matplotlib, Seaborn
 - **App:** Streamlit
 - **Tracking:** MLflow
+- **Warehouse:** Google BigQuery
+- **Transformation:** dbt (dbt-bigquery)
 - **Language:** Python 3.13
 
 ---

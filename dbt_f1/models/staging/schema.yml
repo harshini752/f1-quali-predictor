@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: stg_lap_times
+    description: >
+      Cleaned individual lap records for all practice and qualifying sessions
+      (2022–2024). Timedelta columns have been converted to float seconds.
+      Only accurate laps with a valid positive lap time are included.
+    columns:
+      - name: driver
+        description: Three-letter driver code.
+        tests:
+          - not_null
+      - name: year
+        description: Season year.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2022, 2023, 2024]
+              quote: false
+      - name: session
+        description: Session type.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [FP1, FP2, FP3, Q]
+      - name: lap_time_seconds
+        description: Lap time in seconds. Must be positive.
+        tests:
+          - not_null
+      - name: compound
+        description: Tyre compound.
+        tests:
+          - accepted_values:
+              values: [SOFT, MEDIUM, HARD, INTERMEDIATE, WET, UNKNOWN, TEST_UNKNOWN]
+
+  - name: stg_pit_stops
+    description: >
+      One row per pit stop event, derived by joining laps where PitInTime is set
+      (car enters pits) with the following lap where PitOutTime is set (car exits).
+      pit_stop_duration_seconds is the total stationary time in the pit lane.
+    columns:
+      - name: driver
+        description: Three-letter driver code.
+        tests:
+          - not_null
+      - name: year
+        description: Season year.
+        tests:
+          - not_null
+      - name: pit_stop_duration_seconds
+        description: Time spent in the pit lane in seconds.
+        tests:
+          - not_null

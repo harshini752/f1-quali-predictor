@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+  - name: f1_raw
+    description: Raw F1 data loaded from CSV by the pipeline/load_to_bigquery.py script.
+    schema: f1_data
+    tables:
+      - name: raw_lap_times
+        description: >
+          All individual lap records across FP1, FP2, FP3, and qualifying sessions
+          for the 2022–2024 seasons. Timing columns are stored as float seconds
+          (e.g. LapTime_seconds). Loaded from data/raw/all_sessions.csv.
+        columns:
+          - name: Driver
+            description: Three-letter driver code (e.g. VER, HAM).
+          - name: DriverNumber
+            description: Driver race number.
+          - name: Team
+            description: Constructor name.
+          - name: Year
+            description: Season year.
+          - name: GrandPrix
+            description: Full Grand Prix name.
+          - name: Session
+            description: Session type (FP1, FP2, FP3, Q).
+          - name: LapNumber
+            description: Lap number within the session.
+          - name: Stint
+            description: Stint number (increments after each pit stop).
+          - name: LapTime_seconds
+            description: Lap time in seconds.
+          - name: Compound
+            description: Tyre compound used (SOFT, MEDIUM, HARD).
+          - name: TyreLife
+            description: Age of the tyre set in laps.
+          - name: IsAccurate
+            description: Whether FastF1 considers the lap time accurate.
+          - name: PitInTime_seconds
+            description: Session time when the car entered the pits (null if no pit stop on this lap).
+          - name: PitOutTime_seconds
+            description: Session time when the car exited the pits (null if no pit out on this lap).
+
+      - name: qualifying_features
+        description: >
+          One row per driver per race, with engineered features derived from
+          practice sessions. Used to train and evaluate the qualifying predictor.
+          Loaded from data/processed/features.csv.
+        columns:
+          - name: Year
+            description: Season year.
+          - name: GrandPrix
+            description: Full Grand Prix name.
+          - name: Driver
+            description: Three-letter driver code.
+          - name: Team
+            description: Constructor name.
+          - name: quali_best
+            description: Actual qualifying best lap time in seconds (target variable).
+          - name: FP1_best
+            description: Driver's best FP1 lap time in seconds.
+          - name: FP2_best
+            description: Driver's best FP2 lap time in seconds.
+          - name: FP3_best
+            description: Driver's best FP3 lap time in seconds.

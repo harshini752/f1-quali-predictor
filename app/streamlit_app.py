@@ -8,7 +8,7 @@ import yaml
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-BASE_DIR = Path(__file__).resolve().parents[1]
+BASE_DIR = Path(__file__).parent.parent.resolve()
 MODELS_DIR = BASE_DIR / "models"
 CONFIG_PATH = BASE_DIR / "config.yaml"
 

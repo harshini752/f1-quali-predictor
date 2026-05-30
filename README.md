@@ -3,8 +3,7 @@
 
 🚀 **Live Demo:** [https://f1-quali-predictor.streamlit.app](https://f1-quali-predictor.streamlit.app)
 
-> Predicting Formula 1 qualifying lap times using real practice session 
-> telemetry, weather data, and machine learning.
+> End-to-end ML pipeline: FastF1 ingestion → BigQuery data warehouse → dbt transformations (16 tests) → Random Forest/XGBoost model → live Streamlit app
 
 ---
 
@@ -71,10 +70,10 @@ f1-quali-predictor/
 ├── data/
 │   ├── raw/               # Raw FastF1 session data
 │   └── processed/         # Feature engineered data
-├── pipeline/
+├── pipeline/              # BigQuery data loading scripts
 │   ├── load_to_bigquery.py        # Loads CSV data into BigQuery
 │   └── requirements-pipeline.txt  # BigQuery + dbt dependencies
-├── dbt_f1/                # dbt project for BigQuery transformations
+├── dbt_f1/                # dbt models and tests (staging + marts)
 │   ├── dbt_project.yml
 │   ├── profiles.yml
 │   └── models/
@@ -203,8 +202,9 @@ dbt test --profiles-dir .
 - **Visualization:** Matplotlib, Seaborn
 - **App:** Streamlit
 - **Tracking:** MLflow
-- **Warehouse:** Google BigQuery
-- **Transformation:** dbt (dbt-bigquery)
+- **Warehouse:** Google BigQuery — data warehouse
+- **Transformation:** dbt — data transformation and testing
+- **Infrastructure:** Google Cloud
 - **Language:** Python 3.13
 
 ---

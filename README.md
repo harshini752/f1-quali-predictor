@@ -29,6 +29,14 @@ Can we predict a driver's qualifying lap time using only data available
 
  **Best Model: Random Forest** with MAE of 3.709 seconds
 
+### What does 3.7s MAE mean in practice?
+
+The average F1 qualifying lap time across all 2023 circuits is **84.8 seconds**, so:
+
+- **3.7s MAE ≈ 4.4% of average lap time** — roughly the gap between P1 and P8–P10 in a typical qualifying session
+- A naive baseline (always predicting the training-set mean of 84.1s) achieves MAE of **9.47s (11.2%)**
+- Random Forest is **60.8% more accurate** than this naive baseline, confirming the model captures real structure in the data
+
 ---
 
 ## 🔍 Key Findings

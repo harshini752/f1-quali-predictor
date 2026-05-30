@@ -1,0 +1,16 @@
+services:
+  f1-predictor:
+    build: .
+    image: f1-quali-predictor:latest
+    container_name: f1-quali-predictor
+    ports:
+      - "8501:8501"
+    volumes:
+      # Mount models read-only so re-trained models are picked up without rebuild
+      - ./models:/app/models:ro
+      # Mount config so you can tweak settings without rebuild
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+    restart: unless-stopped

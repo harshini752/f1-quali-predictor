@@ -1,0 +1,13 @@
+.git
+.gitignore
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.pytest_cache/
+notebooks/
+*.ipynb
+data/raw/cache/
+assets/
+tests/

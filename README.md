@@ -1,6 +1,8 @@
 
 # 🏎️ F1 Qualifying Lap Time Predictor
 
+🚀 **Live Demo:** [https://f1-quali-predictor.streamlit.app](https://f1-quali-predictor.streamlit.app)
+
 > Predicting Formula 1 qualifying lap times using real practice session 
 > telemetry, weather data, and machine learning.
 

@@ -30,6 +30,9 @@ model = joblib.load(MODELS_DIR / "best_model.pkl")
 le_driver = joblib.load(MODELS_DIR / f"{encoder_prefix}driver.pkl")
 le_team = joblib.load(MODELS_DIR / f"{encoder_prefix}team.pkl")
 le_gp = joblib.load(MODELS_DIR / f"{encoder_prefix}grandprix.pkl")
+le_fp1_compound = joblib.load(MODELS_DIR / f"{encoder_prefix}fp1_compound.pkl")
+le_fp2_compound = joblib.load(MODELS_DIR / f"{encoder_prefix}fp2_compound.pkl")
+le_fp3_compound = joblib.load(MODELS_DIR / f"{encoder_prefix}fp3_compound.pkl")
 
 # ---------------------------------------------------------------------------
 # UI
@@ -47,6 +50,15 @@ with col2:
     fp1_best = st.number_input("FP1 Best Lap (s)", value=_defaults["fp1_best"])
     fp2_best = st.number_input("FP2 Best Lap (s)", value=_defaults["fp2_best"])
     fp3_best = st.number_input("FP3 Best Lap (s)", value=_defaults["fp3_best"])
+
+st.subheader("Tyre Compounds")
+col3, col4, col5 = st.columns(3)
+with col3:
+    fp1_compound = st.selectbox("FP1 Compound", le_fp1_compound.classes_)
+with col4:
+    fp2_compound = st.selectbox("FP2 Compound", le_fp2_compound.classes_)
+with col5:
+    fp3_compound = st.selectbox("FP3 Compound", le_fp3_compound.classes_)
 
 st.subheader("Weather Conditions")
 air_temp = st.slider(
@@ -72,13 +84,16 @@ rainfall = st.checkbox("Rainfall?")
 if st.button("🔮 Predict Qualifying Time"):
     features = np.array([[
         fp1_best, fp2_best, fp3_best,
-        fp1_best, fp2_best, fp3_best,
-        0.3, 0.3, 0.3,
+        fp1_best, fp2_best, fp3_best,   # mean ≈ best (single-lap estimate)
+        0.0, 0.0, 0.0,                  # std unknown at prediction time
         fp1_best - fp3_best,
         air_temp, track_temp, humidity, int(rainfall),
         le_driver.transform([driver])[0],
         le_team.transform([team])[0],
         le_gp.transform([gp])[0],
+        le_fp1_compound.transform([fp1_compound])[0],
+        le_fp2_compound.transform([fp2_compound])[0],
+        le_fp3_compound.transform([fp3_compound])[0],
     ]])
     prediction = model.predict(features)[0]
     mins = int(prediction // 60)

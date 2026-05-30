@@ -1,5 +1,5 @@
 data:
-  seasons: [2023]
+  seasons: [2022, 2023, 2024]
   sessions: [FP1, FP2, FP3, Q]
   cache_dir: data/raw/cache
   raw_output: data/raw/all_sessions.csv
@@ -24,6 +24,9 @@ model:
     - Driver_enc
     - Team_enc
     - GrandPrix_enc
+    - FP1_compound_enc
+    - FP2_compound_enc
+    - FP3_compound_enc
   target: quali_best
   train_split: 0.8
   random_forest:
@@ -34,6 +37,14 @@ model:
     learning_rate: 0.05
     random_state: 42
   ridge: {}
+  xgboost:
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 6
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+    verbosity: 0
 
 paths:
   models_dir: models

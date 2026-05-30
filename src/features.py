@@ -7,6 +7,17 @@ from sklearn.preprocessing import LabelEncoder
 
 PRACTICE_SESSIONS = ["FP1", "FP2", "FP3"]
 CATEGORICAL_COLS = ["Driver", "Team", "GrandPrix"]
+COMPOUND_COLS = ["FP1_compound", "FP2_compound", "FP3_compound"]
+
+
+def _compound_for_best_lap(session_laps: pd.DataFrame) -> str:
+    """Return the Compound used on the driver's fastest lap in a session."""
+    if session_laps.empty or "Compound" not in session_laps.columns:
+        return "UNKNOWN"
+    valid = session_laps.dropna(subset=["LapTime_s"])
+    if valid.empty:
+        return "UNKNOWN"
+    return str(valid.loc[valid["LapTime_s"].idxmin(), "Compound"])
 
 
 def parse_laptime_to_seconds(df: pd.DataFrame) -> pd.DataFrame:
@@ -31,10 +42,12 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
         row: dict = {"Year": year, "GrandPrix": gp, "Driver": driver}
 
         for sess in PRACTICE_SESSIONS:
-            lap_times = group.loc[group["Session"] == sess, "LapTime_s"]
+            sess_laps = group.loc[group["Session"] == sess]
+            lap_times = sess_laps["LapTime_s"]
             row[f"{sess}_best"] = lap_times.min() if not lap_times.empty else np.nan
             row[f"{sess}_mean"] = lap_times.mean() if not lap_times.empty else np.nan
             row[f"{sess}_std"] = lap_times.std() if not lap_times.empty else np.nan
+            row[f"{sess}_compound"] = _compound_for_best_lap(sess_laps)
 
         fp1 = row["FP1_best"]
         fp3 = row["FP3_best"]
@@ -72,7 +85,9 @@ def encode_categoricals(
     fit_new = encoders is None
     if fit_new:
         encoders = {}
-    for col in CATEGORICAL_COLS:
+    for col in CATEGORICAL_COLS + COMPOUND_COLS:
+        if col not in df.columns:
+            continue
         if fit_new:
             le = LabelEncoder()
             df[f"{col}_enc"] = le.fit_transform(df[col].astype(str))
